@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Đồng hồ thi đấu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      height: 100%;
+      width: 100%;
+      background: #000 url('background B2.png') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Orbitron', sans-serif;
+      color: #00aaff;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      position: relative;
+    }
+    #timer {
+      font-size: 280px;
+      font-weight: bold;
+      letter-spacing: 5px;
+      text-shadow: 0 0 30px rgba(0,170,255,0.6);
+      margin-top: 500px;
+      margin-bottom: 30px;
+    }
+    .controls {
+      display: flex;
+      justify-content: center;
+    }
+    .controls .btn {
+      font-size: 32px;
+      padding: 20px 50px;
+      margin: 0 20px;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      color: white;
+      box-shadow: 0 0 10px rgba(255,255,255,0.3);
+      transition: all 0.3s ease;
+    }
+    .controls .start { background-color: #28a745; }
+    .controls .stop { background-color: #dc3545; }
+    .controls .reset { background-color: #007bff; }
+    .controls .btn:hover {
+      opacity: 0.9;
+      transform: scale(1.05);
+    }
+    .exit-btn {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      font-size: 20px;
+      padding: 10px 20px;
+      background-color: #ffc107;
+      color: #000;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+    .exit-btn:hover {
+      background-color: #e0a800;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="timer">02:00</div>
+
+  <div class="controls">
+    <button class="btn start" onclick="startTimer()">▶ Bắt đầu</button>
+    <button class="btn stop" onclick="pauseTimer()">⏸ Dừng</button>
+    <button class="btn reset" onclick="resetTimer()">🔁 Reset</button>
+  </div>
+
+  <button class="exit-btn" onclick="window.location.href='home.html'">⏹ Kết thúc lượt thi đấu</button>
+
+  <audio id="beep-sound" src="beep.wav"></audio>
+  <audio id="vo-countdown" src="vo_countdown.mp3"></audio>
+  <audio id="end-sound" src="het_gio.mp3"></audio>
+
+  <script>
+    let totalTime = 120;
+    let remainingTime = totalTime;
+    let timerInterval = null;
+
+    const timer = document.getElementById("timer");
+    const beepSound = document.getElementById("beep-sound");
+    const voCountdown = document.getElementById("vo-countdown");
+    const endSound = document.getElementById("end-sound");
+
+    function updateDisplay() {
+      const minutes = Math.floor(remainingTime / 60).toString().padStart(2, '0');
+      const seconds = (remainingTime % 60).toString().padStart(2, '0');
+      timer.innerText = `${minutes}:${seconds}`;
+    }
+
+    function startTimer() {
+      if (timerInterval) return;
+      timerInterval = setInterval(() => {
+        if (remainingTime > 0) {
+          remainingTime--;
+          updateDisplay();
+          beepSound.currentTime = 0;
+          beepSound.play();
+          if (remainingTime === 10) {
+            voCountdown.currentTime = 0;
+            voCountdown.play();
+          }
+        } else {
+          clearInterval(timerInterval);
+          timerInterval = null;
+          endSound.play();
+        }
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+
+    function resetTimer() {
+      pauseTimer();
+      remainingTime = totalTime;
+      updateDisplay();
+    }
+
+    updateDisplay();
+  </script>
+
+</body>
+</html>
